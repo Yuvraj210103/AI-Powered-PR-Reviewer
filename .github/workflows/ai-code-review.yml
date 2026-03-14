@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install OpenAI package
+        run: npm install openai
 
       - name: Get PR files
         run: |
