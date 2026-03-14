@@ -1,5 +1,5 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -9,13 +9,16 @@ async function runReview() {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const result = await model.generateContent(`
-You are a senior software engineer reviewing a pull request.
+You are a senior Flutter developer reviewing a pull request.
 
-Review this code change:
+Analyze the following code changes and provide:
 
+- Issues
+- Suggestions
+- Flutter best practices
+
+Code changes:
 ${diff}
-
-Provide issues, suggestions and improvements.
 `);
 
   const review = result.response.text();

@@ -24,13 +24,14 @@ jobs:
       - name: Install Gemini SDK
         run: npm install @google/generative-ai
 
-      - name: Get PR files
+      # 🔹 This step creates pr.diff
+      - name: Download PR diff
         run: |
-          curl -s \
+          curl -L \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
-          > pr_files.json
+          -H "Accept: application/vnd.github.v3.diff" \
+          ${{ github.event.pull_request.diff_url }} \
+          -o pr.diff
 
       - name: Run AI Review
         run: node scripts/review.js
