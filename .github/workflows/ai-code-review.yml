@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install OpenAI package
-        run: npm install openai
+      - name: Install Gemini SDK
+        run: npm install @google/generative-ai
 
       - name: Get PR files
         run: |
@@ -35,7 +35,7 @@ jobs:
       - name: Run AI Review
         run: node scripts/review.js
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Post Comment to PR
         run: |

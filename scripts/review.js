@@ -1,81 +1,24 @@
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
-const OpenAI = require("openai");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function runReview() {
-  const prData = JSON.parse(fs.readFileSync("pr_files.json", "utf8"));
+  const diff = fs.readFileSync("pr.diff", "utf8");
 
-  let combinedCode = "";
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  for (const file of prData) {
-    if (!file.patch) continue;
-
-    const filePath = file.filename;
-
-    let fileContent = "";
-
-    try {
-      fileContent = fs.readFileSync(filePath, "utf8");
-    } catch (e) {
-      continue;
-    }
-
-    combinedCode += `
-===============================
-FILE: ${filePath}
-
-FULL FILE CODE:
-${fileContent}
-
-DIFF CHANGES:
-${file.patch}
-===============================
-`;
-  }
-
-  const prompt = `
+  const result = await model.generateContent(`
 You are a senior software engineer reviewing a pull request.
 
-Below are files changed in a PR.
+Review this code change:
 
-For each file you will see:
-1) Full file code
-2) Diff of changes
+${diff}
 
-Review the code and provide:
+Provide issues, suggestions and improvements.
+`);
 
-- Issues
-- Suggestions
-- Performance improvements
-- Security concerns
-- Best practices
-
-Format response like:
-
-## AI Code Review
-
-### Issues
-(list)
-
-### Suggestions
-(list)
-
-### Overall Score
-(score out of 10)
-`;
-
-  const response = await openai.chat.completions.create({
-    model: "gpt-4.1-nano",
-    messages: [
-      { role: "system", content: prompt },
-      { role: "user", content: combinedCode },
-    ],
-  });
-
-  const review = response.choices[0].message.content;
+  const review = result.response.text();
 
   fs.writeFileSync("review.txt", review);
 }
