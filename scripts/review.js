@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 async function runReview() {
   const diff = fs.readFileSync("pr.diff", "utf8");
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const result = await model.generateContent(`
 You are a senior Flutter developer reviewing a pull request.
